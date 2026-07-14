@@ -31,9 +31,9 @@ jobs:
               -derivedDataPath build
               
         - name: Run tests
-          run: |
-            xcodebuild test \
-              -scheme WeatherApp \
-              -configuration Debug \
-              -destination "platform=iOS Simulator,name=iPhone 17" \
-              -derivedDataPath build
+              run: |
+                xcodebuild test \
+                  -scheme WeatherApp \
+                  -configuration Debug \
+                  -destination "platform=iOS Simulator,name=iPhone 17" \
+                  -derivedDataPath build
