@@ -40,9 +40,8 @@ jobs:
         run: |
             xcodebuild test \
             -scheme WeatherApp \
-            -destination "platform=iOS Simulator,name=iPhone 14" \
+            -destination "generic/platform=iOS Simulator" \
             -derivedDataPath build \
-            -resultBundlePath TestResults.xcresult
       
       - name: Run tests
         run: |
