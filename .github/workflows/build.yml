@@ -10,10 +10,6 @@ jobs:
   build:
     runs-on: macos-latest
     
-    strategy:
-      matrix:
-        destination: ["generic/platform=iOS Simulator,name=iPhone 14"]
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,23 +26,12 @@ jobs:
         run: |
           xcodebuild build \
             -scheme WeatherApp \
-            -destination "${{ matrix.destination }}" \
+            -destination "generic/platform=iOS Simulator" \
             -derivedDataPath build
             
-      - name: Clean previous test results
-        run: rm -rf TestResults.xcresult
-
-      - name: Run tests
-        run: |
-            xcodebuild test \
-            -scheme WeatherApp \
-            -destination "platform=iOS Simulator,name=iPhone 17" \
-            -derivedDataPath build \
-      
       - name: Run tests
         run: |
           xcodebuild test \
             -scheme WeatherApp \
-            -destination "${{ matrix.destination }}" \
-            -derivedDataPath build \
-            -resultBundlePath TestResults.xcresult
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build
