@@ -32,6 +32,17 @@ jobs:
             -scheme WeatherApp \
             -destination "${{ matrix.destination }}" \
             -derivedDataPath build
+            
+      - name: Clean previous test results
+        run: rm -rf TestResults.xcresult
+
+      - name: Run tests
+        run: |
+            xcodebuild test \
+            -scheme WeatherApp \
+            -destination "platform=iOS Simulator,name=iPhone 14" \
+            -derivedDataPath build \
+            -resultBundlePath TestResults.xcresult
       
       - name: Run tests
         run: |
