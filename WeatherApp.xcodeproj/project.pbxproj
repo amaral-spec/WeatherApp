@@ -30,9 +30,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		384A040E3006A02D000243ED /* WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		384A041B3006A02D000243ED /* WeatherAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		384A04253006A02D000243ED /* WeatherAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		384A040E3006A02D000243ED /* WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = WeatherApp.app; path = "/Users/gabrielamaral/Documents/Projetos/WeatherApp/build/Debug-iphoneos/WeatherApp.app"; sourceTree = "<absolute>"; };
+		384A041B3006A02D000243ED /* WeatherAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = WeatherAppTests.xctest; path = "/Users/gabrielamaral/Documents/Projetos/WeatherApp/build/Debug-iphoneos/WeatherApp.app/PlugIns/WeatherAppTests.xctest"; sourceTree = "<absolute>"; };
+		384A04253006A02D000243ED /* WeatherAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = WeatherAppUITests.xctest; path = "/Users/gabrielamaral/Documents/Projetos/WeatherApp/build/Debug-iphoneos/WeatherAppUITests-Runner.app/PlugIns/WeatherAppUITests.xctest"; sourceTree = "<absolute>"; };
 		384A043C3006A0F1000243ED /* WeatherModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModels.swift; sourceTree = "<group>"; };
 		384A043E3006A18D000243ED /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		384A04403006A287000243ED /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
@@ -85,18 +85,7 @@
 				384A04383006A092000243ED /* Models */,
 				384A04103006A02D000243ED /* WeatherApp */,
 				384A041E3006A02D000243ED /* WeatherAppTests */,
-				384A040F3006A02D000243ED /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		384A040F3006A02D000243ED /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				384A040E3006A02D000243ED /* WeatherApp.app */,
-				384A041B3006A02D000243ED /* WeatherAppTests.xctest */,
-				384A04253006A02D000243ED /* WeatherAppUITests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		384A04383006A092000243ED /* Models */ = {
@@ -231,7 +220,7 @@
 			mainGroup = 384A04053006A02D000243ED;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 384A040F3006A02D000243ED /* Products */;
+			productRefGroup = 384A04053006A02D000243ED;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
