@@ -10,10 +10,6 @@ jobs:
   build:
     runs-on: macos-latest
     
-    strategy:
-      matrix:
-        destination: ["platform=iOS Simulator,name=iPhone 14"]
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,20 +19,21 @@ jobs:
         with:
           xcode-version: latest-stable
       
-      - name: List available schemes
-        run: xcodebuild -list -json
+      - name: List available simulators
+        run: xcrun simctl list devices
       
       - name: Build
         run: |
           xcodebuild build \
             -scheme WeatherApp \
-            -destination "${{ matrix.destination }}" \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=iPhone 17" \
             -derivedDataPath build
-      
+              
       - name: Run tests
         run: |
           xcodebuild test \
             -scheme WeatherApp \
-            -destination "${{ matrix.destination }}" \
-            -derivedDataPath build \
-            -resultBundlePath TestResults.xcresult
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=iPhone 17" \
+            -derivedDataPath build
