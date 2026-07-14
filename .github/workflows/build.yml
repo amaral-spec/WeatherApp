@@ -19,19 +19,19 @@ jobs:
         with:
           xcode-version: latest-stable
       
-      - name: List available schemes
-        run: xcodebuild -list -json
+      - name: List available simulators
+        run: xcrun simctl list devices
       
       - name: Build
         run: |
           xcodebuild build \
             -scheme WeatherApp \
-            -destination "generic/platform=iOS Simulator" \
+            -configuration Debug \
             -derivedDataPath build
             
       - name: Run tests
         run: |
           xcodebuild test \
             -scheme WeatherApp \
-            -destination "generic/platform=iOS Simulator" \
+            -configuration Debug \
             -derivedDataPath build
