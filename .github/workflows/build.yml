@@ -1,0 +1,42 @@
+name: Swift Build & Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        destination: ["generic/platform=iOS Simulator,name=iPhone 14"]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      
+      - name: List available schemes
+        run: xcodebuild -list -json
+      
+      - name: Build
+        run: |
+          xcodebuild build \
+            -scheme WeatherApp \
+            -destination "${{ matrix.destination }}" \
+            -derivedDataPath build
+      
+      - name: Run tests
+        run: |
+          xcodebuild test \
+            -scheme WeatherApp \
+            -destination "${{ matrix.destination }}" \
+            -derivedDataPath build \
+            -resultBundlePath TestResults.xcresult
