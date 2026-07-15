@@ -57,6 +57,17 @@ actor WeatherService: WeatherServiceProtocol {
         return weatherResponse
     }
     
+    func fetchWeatherByCity(_ city: String) async throws -> WeatherResponse {
+            switch city.lowercased() {
+            case "campinas", "campinas, sp":
+                return try await fetchWeather(latitude: -22.9, longitude: -47.0)
+            case "são paulo", "sp":
+                return try await fetchWeather(latitude: -23.55, longitude: -46.63)
+            default:
+                throw WeatherError.cityNotFound
+            }
+        }
+    
     func searchCitiesWithName(_ query: String) async throws -> [CityResult] {
         let urlString = "https://geocoding-api.open-meteo.com/v1/search?name=\(query)"
         
