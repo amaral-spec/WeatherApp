@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 @MainActor
 class WeatherViewModel: ObservableObject {
@@ -22,16 +23,14 @@ class WeatherViewModel: ObservableObject {
     }
     
     func fetchWeather(latitude: Double, longitude: Double) async {
-        // Prepara estado
         isLoading = true
         errorMessage = nil
         weather = nil
         
         do {
-            weather = try await service.fetchWeather(
-                latitude: latitude,
-                longitude: longitude
+            weather = try await service.fetchWeather(latitude: latitude, longitude: longitude
             )
+            
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription

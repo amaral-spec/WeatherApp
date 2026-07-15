@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct ContentView: View {
-    
-    @StateObject var viewModel = WeatherViewModel()
+    @StateObject var weatherViewModel = WeatherViewModel()
+    @StateObject var locationViewModel = LocationViewModel()
+    @State private var cameraPosition: MapCameraPosition = .automatic
     
     var body: some View {
         ZStack {
@@ -25,41 +27,30 @@ struct ContentView: View {
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
                 
-                if viewModel.isLoading {
+                if let cityName = locationViewModel.cityName {
+                    Text(cityName)
+                        .font(.headline)
+                        .foregroundColor(.white)
+                }
+                
+                if weatherViewModel.isLoading || locationViewModel.isLoading {
                     ProgressView()
                         .scaleEffect(1.5)
                         .foregroundColor(.white)
                     
-                } else if let errorMessage = viewModel.errorMessage {
+                } else if let errorMessage = weatherViewModel.errorMessage ?? locationViewModel.errorMessage {
                     VStack(spacing: 10) {
                         Text("Erro")
                             .font(.headline)
                         Text(errorMessage)
                             .font(.caption)
                             .multilineTextAlignment(.center)
-                        
-                        Button(action: {
-                            Task {
-                                await viewModel.fetchWeather(
-                                    latitude: -22.9,
-                                    longitude: -47.0
-                                )
-                            }
-                        }) {
-                            Text("Tentar Novamente")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(.white)
-                                .foregroundColor(.blue)
-                                .cornerRadius(10)
-                        }
                     }
                     .padding()
                     .background(Color.white.opacity(0.1))
                     .cornerRadius(10)
                     
-                } else if let weather = viewModel.weather {
+                } else if let weather = weatherViewModel.weather {
                     VStack(spacing: 20) {
                         Text("\(Int(weather.current.temperature))°")
                             .font(.system(size: 72, weight: .bold))
@@ -92,50 +83,55 @@ struct ContentView: View {
                         .cornerRadius(10)
                         .foregroundColor(.white)
                     }
-                    
-                } else {
-                    VStack(spacing: 10) {
-                        Text("Toque abaixo para carregar clima")
-                            .foregroundColor(.white)
-                        
-                        Button(action: {
-                            Task {
-                                await viewModel.fetchWeather(
-                                    latitude: -22.9,
-                                    longitude: -47.0
-                                )
-                            }
-                        }) {
-                            Text("Carregar Clima")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(.white)
-                                .foregroundColor(.blue)
-                                .cornerRadius(10)
-                        }
-                    }
                 }
                 
                 Spacer()
+                
+                if locationViewModel.latitude != 0 && locationViewModel.longitude != 0 {
+                    Map(position: $cameraPosition)
+                        .frame(height: 350)
+                        .cornerRadius(10)
+                } else {
+                    ProgressView()
+                        .frame(height: 350)
+                }
             }
             .padding()
         }
-    }
-    
-    func describeWeather(_ code: Int) -> String {
-        switch code {
-        case 0: return "Céu Limpo"
-        case 1, 2: return "Parcialmente Nublado"
-        case 3: return "Nublado"
-        case 45, 48: return "Névoa"
-        case 51...67: return "Chuva"
-        case 71...77: return "Neve"
-        default: return "Desconhecido"
+        .onAppear {
+            locationViewModel.requestLocation()
+        }
+        .onChange(of: locationViewModel.latitude) { _, newLatitude in
+            guard newLatitude != 0,
+                  locationViewModel.longitude != 0 else { return }
+            
+            cameraPosition = .region(
+                MKCoordinateRegion(
+                    center: CLLocationCoordinate2D(
+                        latitude: newLatitude,
+                        longitude: locationViewModel.longitude
+                    ),
+                    span: MKCoordinateSpan(
+                        latitudeDelta: 0.05,
+                        longitudeDelta: 0.05
+                    )
+                )
+            )
+            
+            Task {
+                await weatherViewModel.fetchWeather(
+                    latitude: newLatitude,
+                    longitude: locationViewModel.longitude
+                )
+                
+                await locationViewModel.fetchCity(
+                    latitude: newLatitude,
+                    longitude: locationViewModel.longitude
+                )
+            }
         }
     }
 }
-
 
 #Preview {
     ContentView()
