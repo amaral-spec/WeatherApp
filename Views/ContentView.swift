@@ -12,123 +12,109 @@ struct ContentView: View {
     @StateObject var weatherViewModel = WeatherViewModel()
     @StateObject var locationViewModel = LocationViewModel()
     @State private var cameraPosition: MapCameraPosition = .automatic
-    
+    @State private var loadingStarted = false
+
+    private var errorMessage: String? {
+        weatherViewModel.errorMessage ?? locationViewModel.errorMessage
+    }
+
     var body: some View {
         ZStack {
             LinearGradient(
-                gradient: Gradient(colors: [.blue, .cyan]),
+                colors: WeatherTheme.gradientColors,
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
-            
-            VStack(spacing: 20) {
-                Text("Clima Agora")
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(.white)
-                
-                if let cityName = locationViewModel.cityName {
-                    Text(cityName)
-                        .font(.headline)
-                        .foregroundColor(.white)
-                }
-                
-                if weatherViewModel.isLoading || locationViewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .foregroundColor(.white)
-                    
-                } else if let errorMessage = weatherViewModel.errorMessage ?? locationViewModel.errorMessage {
-                    VStack(spacing: 10) {
-                        Text("Erro")
-                            .font(.headline)
-                        Text(errorMessage)
-                            .font(.caption)
-                            .multilineTextAlignment(.center)
+
+            ScrollView {
+                VStack(spacing: WeatherTheme.contentSpacing) {
+                    if let weather = weatherViewModel.weather {
+                        WeatherIconView(weatherCode: weather.current.weatherCode)
                     }
-                    .padding()
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(10)
-                    
-                } else if let weather = weatherViewModel.weather {
-                    VStack(spacing: 20) {
-                        Text("\(Int(weather.current.temperature))°")
-                            .font(.system(size: 72, weight: .bold))
-                            .foregroundColor(.white)
-                        
-                        Text(describeWeather(weather.current.weatherCode))
+
+                    Text("Clima Agora")
+                        .font(.largeTitle.bold())
+                        .foregroundStyle(.white)
+
+                    if let cityName = locationViewModel.cityName {
+                        Text(cityName)
                             .font(.headline)
-                            .foregroundColor(.white)
-                        
-                        HStack(spacing: 20) {
-                            VStack(spacing: 5) {
-                                Text("Umidade")
-                                    .font(.caption)
-                                Text("\(weather.current.humidity)%")
-                                    .font(.headline)
-                            }
-                            
-                            Divider()
-                                .frame(height: 40)
-                            
-                            VStack(spacing: 5) {
-                                Text("Vento")
-                                    .font(.caption)
-                                Text("\(Int(weather.current.windSpeed)) km/h")
-                                    .font(.headline)
-                            }
-                        }
-                        .padding()
-                        .background(Color.white.opacity(0.1))
-                        .cornerRadius(10)
-                        .foregroundColor(.white)
+                            .foregroundStyle(.white)
+                    }
+
+                    if weatherViewModel.isLoading {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .tint(.white)
+                    } else if let errorMessage {
+                        WeatherErrorView(message: errorMessage, retryAction: retryLoading)
+                    } else if let weather = weatherViewModel.weather {
+                        CurrentWeatherCard(weather: weather.current)
+                    }
+
+                    if locationViewModel.latitude != 0 && locationViewModel.longitude != 0 {
+                        LocationMapView(
+                            cameraPosition: $cameraPosition,
+                            latitude: locationViewModel.latitude,
+                            longitude: locationViewModel.longitude
+                        )
+                    } else {
+                        ProgressView()
+                            .tint(.white)
+                            .frame(minHeight: WeatherTheme.minMapHeight)
                     }
                 }
-                
-                Spacer()
-                
-                if locationViewModel.latitude != 0 && locationViewModel.longitude != 0 {
-                    Map(position: $cameraPosition)
-                        .frame(height: 350)
-                        .cornerRadius(10)
-                } else {
-                    ProgressView()
-                        .frame(height: 350)
-                }
+                .padding()
             }
-            .padding()
         }
-        .onAppear {
-            locationViewModel.requestLocation()
-        }
+        .onAppear(perform: startLoadingIfNeeded)
         .onChange(of: locationViewModel.latitude) { _, newLatitude in
-            guard newLatitude != 0,
-                  locationViewModel.longitude != 0 else { return }
-            
-            cameraPosition = .region(
-                MKCoordinateRegion(
-                    center: CLLocationCoordinate2D(
-                        latitude: newLatitude,
-                        longitude: locationViewModel.longitude
-                    ),
-                    span: MKCoordinateSpan(
-                        latitudeDelta: 0.05,
-                        longitudeDelta: 0.05
-                    )
-                )
-            )
-            
-            Task {
-                await weatherViewModel.fetchWeather(
-                    latitude: newLatitude,
-                    longitude: locationViewModel.longitude
-                )
-                
-                await locationViewModel.fetchCity(
-                    latitude: newLatitude,
-                    longitude: locationViewModel.longitude
-                )
+            guard newLatitude != 0, locationViewModel.longitude != 0 else { return }
+            fetchWeatherAndCity(lat: newLatitude, lon: locationViewModel.longitude)
+        }
+    }
+
+    private func startLoadingIfNeeded() {
+        guard !loadingStarted else { return }
+        loadingStarted = true
+        locationViewModel.requestLocation()
+
+        Task {
+            try? await Task.sleep(for: .seconds(3))
+            if locationViewModel.latitude == 0 {
+                loadWeatherWithFallback()
             }
+        }
+    }
+
+    private func retryLoading() {
+        loadingStarted = false
+        weatherViewModel.errorMessage = nil
+        locationViewModel.errorMessage = nil
+        startLoadingIfNeeded()
+    }
+
+    private func loadWeatherWithFallback() {
+        Task {
+            await weatherViewModel.fetchWeather(latitude: -22.9, longitude: -47.0)
+            await locationViewModel.fetchCity(latitude: -22.9, longitude: -47.0)
+        }
+    }
+
+    private func fetchWeatherAndCity(lat: Double, lon: Double) {
+        cameraPosition = .region(
+            MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: lat, longitude: lon),
+                span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+            )
+        )
+
+        Task {
+            async let weather: () = weatherViewModel.fetchWeather(latitude: lat, longitude: lon)
+            async let city: () = locationViewModel.fetchCity(latitude: lat, longitude: lon)
+
+            _ = await (weather, city)
         }
     }
 }

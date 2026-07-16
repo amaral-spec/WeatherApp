@@ -18,3 +18,15 @@ func describeWeather(_ code: Int) -> String {
     default: return "Desconhecido"
     }
 }
+
+func weatherAnimation(_ code: Int) -> String {
+    switch code {
+    case 0: return "sun.max.fill"           // Céu limpo
+    case 1, 2: return "cloud.sun.fill"      // Parcialmente nublado
+    case 3: return "cloud.fill"             // Nublado
+    case 45, 48: return "cloud.fog.fill"    // Névoa
+    case 51...67: return "cloud.rain.fill"  // Chuva
+    case 71...77: return "cloud.snow.fill"  // Neve
+    default: return "cloud.fill"
+    }
+}
