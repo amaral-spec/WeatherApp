@@ -16,7 +16,8 @@ protocol URLSessionProtocol {
 extension URLSession: URLSessionProtocol {}
 
 protocol WeatherServiceProtocol {
-    func fetchWeather(latitude: Double, longitude: Double) async throws -> WeatherResponse    
+    func fetchWeather(latitude: Double, longitude: Double) async throws -> WeatherResponse
+    func searchCitiesWithName(_ query: String) async throws -> [CityResult]
 }
 
 actor WeatherService: WeatherServiceProtocol {
@@ -85,13 +86,7 @@ actor WeatherService: WeatherServiceProtocol {
         let results: [CityResult]?
     }
 
-    struct CityResult: Codable {
-        let name: String
-        let latitude: Double
-        let longitude: Double
-        let country: String
-    }
-    
+
     func getCityName(latitude: Double, longitude: Double) async throws -> String {
             let location = CLLocation(latitude: latitude, longitude: longitude)
             

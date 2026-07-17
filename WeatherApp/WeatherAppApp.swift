@@ -6,12 +6,22 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct WeatherAppApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                Tab("Clima", systemImage: "cloud.sun.fill") {
+                    ContentView()
+                }
+                Tab("Buscar", systemImage: "magnifyingglass") {
+                    SearchCityView()
+                }
+            }
+            .preferredColorScheme(.dark)
         }
+        .modelContainer(for: [FavoriteCity.self])
     }
 }

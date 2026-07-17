@@ -12,7 +12,8 @@ class MockWeatherService: WeatherServiceProtocol {
     
     var mockWeather: WeatherResponse?
     var mockError: Error?
-    
+    var mockCityResults: [CityResult] = []
+
     func fetchWeather(
         latitude: Double,
         longitude: Double
@@ -30,16 +31,24 @@ class MockWeatherService: WeatherServiceProtocol {
     }
     
     func fetchWeatherByCity(_ city: String) async throws -> WeatherResponse {
-        
+
         if let error = mockError {
             throw error
         }
-        
+
         guard let weather = mockWeather else {
             throw URLError(.unknown)
         }
-        
+
         return weather
+    }
+
+    func searchCitiesWithName(_ query: String) async throws -> [CityResult] {
+        if let error = mockError {
+            throw error
+        }
+
+        return mockCityResults
     }
 }
 

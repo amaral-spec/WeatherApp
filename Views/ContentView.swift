@@ -73,6 +73,16 @@ struct ContentView: View {
             guard newLatitude != 0, locationViewModel.longitude != 0 else { return }
             fetchWeatherAndCity(lat: newLatitude, lon: locationViewModel.longitude)
         }
+        .refreshable {
+            await weatherViewModel.fetchWeather(
+                latitude: locationViewModel.latitude,
+                longitude: locationViewModel.longitude
+            )
+            await locationViewModel.fetchCity(
+                latitude: locationViewModel.latitude,
+                longitude: locationViewModel.longitude
+            )
+        }
     }
 
     private func startLoadingIfNeeded() {
