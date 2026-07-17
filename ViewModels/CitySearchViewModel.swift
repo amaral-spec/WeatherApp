@@ -32,7 +32,8 @@ class CitySearchViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            results = try await service.searchCitiesWithName(query)
+            let allResults = try await service.searchCitiesWithName(query)
+            results = removeDuplicates(allResults)
         } catch {
             results = []
             errorMessage = error.localizedDescription
@@ -45,4 +46,17 @@ class CitySearchViewModel: ObservableObject {
         results = []
         errorMessage = nil
     }
+
+    private func removeDuplicates(_ cities: [CityResult]) -> [CityResult] {
+        var seen = Set<String>()
+        return cities.filter { city in
+            let key = "\(city.name), \(city.country)"
+            if seen.contains(key) {
+                return false
+            }
+            seen.insert(key)
+            return true
+        }
+    }
+        
 }
