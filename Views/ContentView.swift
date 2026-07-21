@@ -36,11 +36,12 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 LinearGradient(
-                    colors: WeatherTheme.gradientColors,
+                    colors: WeatherTheme.gradientColors(temperature: weatherViewModel.weather?.current.temperature ?? WeatherTheme.defaultTemperature),
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
+                .animation(WeatherTheme.backgroundTransition, value: weatherViewModel.weather?.current.temperature)
                 
                 ScrollView {
                     VStack(spacing: WeatherTheme.contentSpacing) {

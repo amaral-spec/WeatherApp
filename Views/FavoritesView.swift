@@ -11,19 +11,23 @@ import SwiftData
 struct FavoritesView: View {
     @Query(sort: \FavoriteCity.addedDate, order: .reverse) private var favorites: [FavoriteCity]
     @State private var selectedCity: CityResult?
+    @State private var displayedTemperature: Double = WeatherTheme.defaultTemperature
 
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearGradient(
-                    colors: WeatherTheme.gradientColors,
+                    colors: WeatherTheme.gradientColors(temperature: displayedTemperature),
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
+                .animation(WeatherTheme.backgroundTransition, value: displayedTemperature)
 
                 if let selectedCity {
-                    CityWeatherDetailView(city: selectedCity) {
+                    CityWeatherDetailView(city: selectedCity, onTemperatureChange: { temperature in
+                        displayedTemperature = temperature ?? WeatherTheme.defaultTemperature
+                    }) {
                         CityFavoriteControls(city: selectedCity)
                     }
                 } else {
@@ -38,6 +42,7 @@ struct FavoritesView: View {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Favoritos", systemImage: "chevron.left") {
                             selectedCity = nil
+                            displayedTemperature = WeatherTheme.defaultTemperature
                         }
                     }
                 }

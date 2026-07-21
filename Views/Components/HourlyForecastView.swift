@@ -31,18 +31,18 @@ struct HourlyForecastView: View {
     }
 }
 
-#Preview {
-    ZStack {
-        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
-        HourlyForecastView(
-            forecast: [
-                HourlyForecast(time: "2026-07-20T14:00", temperature: 22, weatherCode: 0, windSpeed: 10),
-                HourlyForecast(time: "2026-07-20T15:00", temperature: 21, weatherCode: 3, windSpeed: 12),
-                HourlyForecast(time: "2026-07-20T16:00", temperature: 20, weatherCode: 61, windSpeed: 14)
-            ],
-            timezone: "America/Sao_Paulo"
-        )
-        .padding()
-    }
-}
+//#Preview {
+//    ZStack {
+//        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
+//            .ignoresSafeArea()
+//        HourlyForecastView(
+//            forecast: [
+//                HourlyForecast(time: "2026-07-20T14:00", temperature: 22, weatherCode: 0, windSpeed: 10),
+//                HourlyForecast(time: "2026-07-20T15:00", temperature: 21, weatherCode: 3, windSpeed: 12),
+//                HourlyForecast(time: "2026-07-20T16:00", temperature: 20, weatherCode: 61, windSpeed: 14)
+//            ],
+//            timezone: "America/Sao_Paulo"
+//        )
+//        .padding()
+//    }
+//}
