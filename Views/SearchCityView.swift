@@ -12,16 +12,18 @@ struct SearchCityView: View {
     @StateObject private var searchViewModel = CitySearchViewModel()
     @State private var searchText = ""
     @State private var selectedCity: CityResult?
+    @State private var displayedTemperature: Double = WeatherTheme.defaultTemperature
 
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearGradient(
-                    colors: WeatherTheme.gradientColors,
+                    colors: WeatherTheme.gradientColors(temperature: displayedTemperature),
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
+                .animation(WeatherTheme.backgroundTransition, value: displayedTemperature)
 
                 if let selectedCity {
                     selectedCityContent(selectedCity)
@@ -54,7 +56,9 @@ struct SearchCityView: View {
     }
 
     private func selectedCityContent(_ city: CityResult) -> some View {
-        CityWeatherDetailView(city: city) {
+        CityWeatherDetailView(city: city, onTemperatureChange: { temperature in
+            displayedTemperature = temperature ?? WeatherTheme.defaultTemperature
+        }) {
             VStack(spacing: 12) {
                 CityFavoriteControls(city: city)
 
@@ -106,6 +110,7 @@ struct SearchCityView: View {
 
     private func resetSearch() {
         selectedCity = nil
+        displayedTemperature = WeatherTheme.defaultTemperature
     }
 }
 

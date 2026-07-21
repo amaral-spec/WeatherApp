@@ -22,19 +22,27 @@ struct CitySearchRow: View {
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(city.name)
-                    .font(.headline)
-                    .foregroundStyle(.white)
+            Button(action: onSelect) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(city.name)
+                            .font(.headline)
+                            .foregroundStyle(.white)
 
-                Text(city.country)
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.7))
+                        Text(city.country)
+                            .font(.subheadline)
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.bold())
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                .contentShape(Rectangle())
             }
-            .contentShape(Rectangle())
-            .onTapGesture(perform: onSelect)
-
-            Spacer()
+            .buttonStyle(.plain)
 
             Button {
                 favoritesViewModel.toggleFavorite(
@@ -51,12 +59,6 @@ struct CitySearchRow: View {
             }
             .buttonStyle(.plain)
             .frame(minWidth: 44, minHeight: 44)
-
-            Image(systemName: "chevron.right")
-                .font(.footnote.bold())
-                .foregroundStyle(.white.opacity(0.5))
-                .contentShape(Rectangle())
-                .onTapGesture(perform: onSelect)
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -65,13 +67,13 @@ struct CitySearchRow: View {
     }
 }
 
-#Preview {
-    ZStack {
-        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
-        CitySearchRow(city: CityResult(name: "Campinas", latitude: -22.9, longitude: -47.0, country: "Brazil"))
-            .padding()
-    }
-    .environmentObject(FavoritesViewModel())
-    .modelContainer(for: [FavoriteCity.self], inMemory: true)
-}
+//#Preview {
+//    ZStack {
+//        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
+//            .ignoresSafeArea()
+//        CitySearchRow(city: CityResult(name: "Campinas", latitude: -22.9, longitude: -47.0, country: "Brazil"))
+//            .padding()
+//    }
+//    .environmentObject(FavoritesViewModel())
+//    .modelContainer(for: [FavoriteCity.self], inMemory: true)
+//}

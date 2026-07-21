@@ -38,10 +38,10 @@ struct CurrentWeatherCard: View {
     }
 }
 
-#Preview {
-    CurrentWeatherCard(
-        weather: CurrentWeather(temperature: 24.6, weatherCode: 1, windSpeed: 12, humidity: 65)
-    )
-    .padding()
-    .background(LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom))
-}
+//#Preview {
+//    CurrentWeatherCard(
+//        weather: CurrentWeather(temperature: 24.6, weatherCode: 1, windSpeed: 12, humidity: 65)
+//    )
+//    .padding()
+//    .background(LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom))
+//}

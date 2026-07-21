@@ -12,6 +12,7 @@ import MapKit
 /// Used both by search results and by the favorites list, so the two stay visually identical.
 struct CityWeatherDetailView<Trailing: View>: View {
     let city: CityResult
+    var onTemperatureChange: (Double?) -> Void = { _ in }
     @ViewBuilder var trailing: () -> Trailing
 
     @StateObject private var weatherViewModel = WeatherViewModel()
@@ -69,6 +70,12 @@ struct CityWeatherDetailView<Trailing: View>: View {
             )
             await fetchWeather()
         }
+        .onChange(of: weatherViewModel.weather?.current.temperature) { _, newTemperature in
+            onTemperatureChange(newTemperature)
+        }
+        .onDisappear {
+            onTemperatureChange(nil)
+        }
     }
 
     private func fetchWeather() async {
@@ -83,10 +90,10 @@ extension CityWeatherDetailView where Trailing == EmptyView {
     }
 }
 
-#Preview {
-    ZStack {
-        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
-        CityWeatherDetailView(city: CityResult(name: "Campinas", latitude: -22.9, longitude: -47.0, country: "Brazil"))
-    }
-}
+//#Preview {
+//    ZStack {
+//        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
+//            .ignoresSafeArea()
+//        CityWeatherDetailView(city: CityResult(name: "Campinas", latitude: -22.9, longitude: -47.0, country: "Brazil"))
+//    }
+//}

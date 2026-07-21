@@ -70,13 +70,13 @@ struct CityFavoriteControls: View {
     }
 }
 
-#Preview {
-    ZStack {
-        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
-        CityFavoriteControls(city: CityResult(name: "Campinas", latitude: -22.9, longitude: -47.0, country: "Brazil"))
-            .padding()
-    }
-    .environmentObject(FavoritesViewModel())
-    .modelContainer(for: [FavoriteCity.self], inMemory: true)
-}
+//#Preview {
+//    ZStack {
+//        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
+//            .ignoresSafeArea()
+//        CityFavoriteControls(city: CityResult(name: "Campinas", latitude: -22.9, longitude: -47.0, country: "Brazil"))
+//            .padding()
+//    }
+//    .environmentObject(FavoritesViewModel())
+//    .modelContainer(for: [FavoriteCity.self], inMemory: true)
+//}

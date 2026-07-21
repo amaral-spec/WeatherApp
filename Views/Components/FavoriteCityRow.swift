@@ -18,19 +18,27 @@ struct FavoriteCityRow: View {
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(favorite.cityName)
-                    .font(.headline)
-                    .foregroundStyle(.white)
+            Button(action: onSelect) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(favorite.cityName)
+                            .font(.headline)
+                            .foregroundStyle(.white)
 
-                Text(favorite.cityCountry)
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.7))
+                        Text(favorite.cityCountry)
+                            .font(.subheadline)
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.bold())
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                .contentShape(Rectangle())
             }
-            .contentShape(Rectangle())
-            .onTapGesture(perform: onSelect)
-
-            Spacer()
+            .buttonStyle(.plain)
 
             Button(action: toggleNotifications) {
                 Image(systemName: favorite.notificate ? "bell.fill" : "bell")
@@ -45,12 +53,6 @@ struct FavoriteCityRow: View {
             }
             .buttonStyle(.plain)
             .frame(minWidth: 44, minHeight: 44)
-
-            Image(systemName: "chevron.right")
-                .font(.footnote.bold())
-                .foregroundStyle(.white.opacity(0.5))
-                .contentShape(Rectangle())
-                .onTapGesture(perform: onSelect)
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -84,13 +86,13 @@ struct FavoriteCityRow: View {
     }
 }
 
-#Preview {
-    ZStack {
-        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
-        FavoriteCityRow(favorite: FavoriteCity(cityName: "Campinas", cityCountry: "Brazil", latitude: -22.9, longitude: -47.0, notificate: true))
-            .padding()
-    }
-    .environmentObject(FavoritesViewModel())
-    .modelContainer(for: [FavoriteCity.self], inMemory: true)
-}
+//#Preview {
+//    ZStack {
+//        LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom)
+//            .ignoresSafeArea()
+//        FavoriteCityRow(favorite: FavoriteCity(cityName: "Campinas", cityCountry: "Brazil", latitude: -22.9, longitude: -47.0, notificate: true))
+//            .padding()
+//    }
+//    .environmentObject(FavoritesViewModel())
+//    .modelContainer(for: [FavoriteCity.self], inMemory: true)
+//}
