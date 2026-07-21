@@ -23,8 +23,8 @@ struct WeatherErrorView: View {
     }
 }
 
-#Preview {
-    WeatherErrorView(message: "Não foi possível obter sua localização.") {}
-        .padding()
-        .background(LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom))
-}
+//#Preview {
+//    WeatherErrorView(message: "Não foi possível obter sua localização.") {}
+//        .padding()
+//        .background(LinearGradient(colors: WeatherTheme.gradientColors, startPoint: .top, endPoint: .bottom))
+//}
