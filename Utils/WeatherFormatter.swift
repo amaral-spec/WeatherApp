@@ -30,3 +30,46 @@ func weatherAnimation(_ code: Int) -> String {
     default: return "cloud.fill"
     }
 }
+
+private func hourlyTimeParser(for timezone: String) -> DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone(identifier: timezone) ?? .current
+    return formatter
+}
+
+func nextHours(
+    from hourlyData: HourlyData,
+    timezone: String,
+    count: Int = 12,
+    now: Date = Date()
+) -> [HourlyForecast] {
+    let parser = hourlyTimeParser(for: timezone)
+
+    guard let startIndex = hourlyData.time.firstIndex(where: { timeString in
+        guard let date = parser.date(from: timeString) else { return false }
+        return date >= now
+    }) else {
+        return []
+    }
+
+    let endIndex = min(startIndex + count, hourlyData.time.count)
+
+    return (startIndex..<endIndex).map { index in
+        HourlyForecast(
+            time: hourlyData.time[index],
+            temperature: hourlyData.temperature[index],
+            weatherCode: hourlyData.weatherCode[index],
+            windSpeed: hourlyData.windSpeed[index]
+        )
+    }
+}
+
+func formatHourlyTime(_ dateString: String, timezone: String) -> String {
+    let parser = hourlyTimeParser(for: timezone)
+
+    guard let date = parser.date(from: dateString) else { return dateString }
+
+    return date.formatted(Date.FormatStyle(date: .omitted, time: .shortened, timeZone: parser.timeZone))
+}

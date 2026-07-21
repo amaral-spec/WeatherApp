@@ -30,16 +30,14 @@ actor WeatherService: WeatherServiceProtocol {
         self.session = session
     }
     
-    func fetchWeather(
-        latitude: Double,
-        longitude: Double
-    ) async throws -> WeatherResponse {
+    func fetchWeather(latitude: Double, longitude: Double) async throws -> WeatherResponse {
         
         let urlString = "\(baseURL)/forecast?" +
             "latitude=\(latitude)" +
             "&longitude=\(longitude)" +
             "&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m" +
-            "&timezone=auto"
+            "&timezone=auto" +
+            "&hourly=temperature_2m,weather_code,wind_speed_10m"
         
         guard let url = URL(string: urlString) else {
             throw WeatherError.invalidURL
@@ -87,23 +85,22 @@ actor WeatherService: WeatherServiceProtocol {
     }
 
 
-    func getCityName(latitude: Double, longitude: Double) async throws -> String {
-            let location = CLLocation(latitude: latitude, longitude: longitude)
-            
-            let placemarks = try await geocoder.reverseGeocodeLocation(location)
-            
-            guard let placemark = placemarks.first else {
-                throw WeatherError.cityNotFound
-            }
-            
-            if let city = placemark.locality {
-                return city
-            } else if let administrativeArea = placemark.administrativeArea {
-                return administrativeArea
-            } else {
-                throw WeatherError.cityNotFound
-            }
+    func getPlacemarkLocation(latitude: Double, longitude: Double) async throws -> PlacemarkLocation {
+        let location = CLLocation(latitude: latitude, longitude: longitude)
+        let placemarks = try await geocoder.reverseGeocodeLocation(location)
+
+        guard let placemark = placemarks.first,
+              let city = placemark.locality ?? placemark.administrativeArea else {
+            throw WeatherError.cityNotFound
         }
+
+        return PlacemarkLocation(city: city, country: placemark.country ?? "")
+    }
+}
+
+struct PlacemarkLocation {
+    let city: String
+    let country: String
 }
 
 enum WeatherError: Error {

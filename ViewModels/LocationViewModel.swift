@@ -17,6 +17,7 @@ class LocationViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var cityName: String?
+    @Published var countryName: String?
 
     
     override init() {
@@ -44,11 +45,13 @@ class LocationViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     func fetchCity(latitude: Double, longitude: Double) async {
         isLoading = true
         errorMessage = nil
-        
+
         do {
             let service = WeatherService()
-            cityName = try await service.getCityName(latitude: latitude, longitude: longitude)
-            
+            let placemark = try await service.getPlacemarkLocation(latitude: latitude, longitude: longitude)
+            cityName = placemark.city
+            countryName = placemark.country
+
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription

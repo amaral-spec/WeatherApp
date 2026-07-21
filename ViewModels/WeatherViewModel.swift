@@ -15,6 +15,7 @@ class WeatherViewModel: ObservableObject {
     @Published var weather: WeatherResponse?
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var hourlyForecast: [HourlyForecast] = []
     
     let service: WeatherServiceProtocol
     
@@ -26,11 +27,13 @@ class WeatherViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         weather = nil
-        
+        hourlyForecast = []
+
         do {
-            weather = try await service.fetchWeather(latitude: latitude, longitude: longitude
-            )
-            
+            let weather = try await service.fetchWeather(latitude: latitude, longitude: longitude)
+            self.weather = weather
+            hourlyForecast = nextHours(from: weather.hourly, timezone: weather.timezone)
+
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription

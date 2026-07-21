@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct WeatherAppApp: App {
+    @StateObject private var favoritesViewModel = FavoritesViewModel()
+
     var body: some Scene {
         WindowGroup {
             TabView {
@@ -19,8 +21,25 @@ struct WeatherAppApp: App {
                 Tab("Buscar", systemImage: "magnifyingglass") {
                     SearchCityView()
                 }
+                Tab("Favoritos", systemImage: "star.fill") {
+                    FavoritesView()
+                }
             }
+            .environmentObject(favoritesViewModel)
             .preferredColorScheme(.dark)
+            .alert(
+                "Não foi possível concluir",
+                isPresented: Binding(
+                    get: { favoritesViewModel.notificationError != nil },
+                    set: { isPresented in
+                        if !isPresented { favoritesViewModel.notificationError = nil }
+                    }
+                )
+            ) {
+                Button("OK") {}
+            } message: {
+                Text(favoritesViewModel.notificationError ?? "")
+            }
         }
         .modelContainer(for: [FavoriteCity.self])
     }

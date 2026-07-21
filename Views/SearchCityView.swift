@@ -6,15 +6,13 @@
 //
 
 import SwiftUI
-import MapKit
+import SwiftData
 
 struct SearchCityView: View {
     @StateObject private var searchViewModel = CitySearchViewModel()
-    @StateObject private var weatherViewModel = WeatherViewModel()
     @State private var searchText = ""
     @State private var selectedCity: CityResult?
-    @State private var cameraPosition: MapCameraPosition = .automatic
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -56,38 +54,9 @@ struct SearchCityView: View {
     }
 
     private func selectedCityContent(_ city: CityResult) -> some View {
-        ScrollView {
-            VStack(spacing: WeatherTheme.contentSpacing) {
-                if let weather = weatherViewModel.weather {
-                    WeatherIconView(weatherCode: weather.current.weatherCode)
-                }
-
-                Text(city.name)
-                    .font(.largeTitle.bold())
-                    .foregroundStyle(.white)
-
-                Text(city.country)
-                    .font(.headline)
-                    .foregroundStyle(.white)
-
-                if weatherViewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .tint(.white)
-                } else if let errorMessage = weatherViewModel.errorMessage {
-                    WeatherErrorView(message: errorMessage) {
-                        Task { await fetchWeather(for: city) }
-                    }
-                } else if let weather = weatherViewModel.weather {
-                    CurrentWeatherCard(weather: weather.current)
-                }
-
-                LocationMapView(
-                    cameraPosition: $cameraPosition,
-                    latitude: city.latitude,
-                    longitude: city.longitude,
-                    markerTitle: city.name
-                )
+        CityWeatherDetailView(city: city) {
+            VStack(spacing: 12) {
+                CityFavoriteControls(city: city)
 
                 Button("Nova Busca", systemImage: "magnifyingglass", action: resetSearch)
                     .font(.headline)
@@ -97,16 +66,6 @@ struct SearchCityView: View {
                     .background(WeatherTheme.cardBackground)
                     .clipShape(.rect(cornerRadius: WeatherTheme.cardCornerRadius))
             }
-            .padding()
-        }
-        .task(id: city) {
-            cameraPosition = .region(
-                MKCoordinateRegion(
-                    center: CLLocationCoordinate2D(latitude: city.latitude, longitude: city.longitude),
-                    span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-                )
-            )
-            await fetchWeather(for: city)
         }
     }
 
@@ -133,11 +92,7 @@ struct SearchCityView: View {
             ScrollView {
                 LazyVStack(spacing: 12) {
                     ForEach(searchViewModel.results) { city in
-                        Button {
-                            selectCity(city)
-                        } label: {
-                            CitySearchRow(city: city)
-                        }
+                        CitySearchRow(city: city, onSelect: { selectCity(city) })
                     }
                 }
                 .padding()
@@ -149,17 +104,13 @@ struct SearchCityView: View {
         selectedCity = city
     }
 
-    private func fetchWeather(for city: CityResult) async {
-        await weatherViewModel.fetchWeather(latitude: city.latitude, longitude: city.longitude)
-    }
-
     private func resetSearch() {
         selectedCity = nil
-        weatherViewModel.weather = nil
-        weatherViewModel.errorMessage = nil
     }
 }
 
 #Preview {
     SearchCityView()
+        .environmentObject(FavoritesViewModel())
+        .modelContainer(for: [FavoriteCity.self], inMemory: true)
 }

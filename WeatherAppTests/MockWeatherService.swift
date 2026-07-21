@@ -62,6 +62,12 @@ func createMockWeather() -> WeatherResponse {
             weatherCode: 0,
             windSpeed: 5.2,
             humidity: 60
+        ),
+        hourly: HourlyData(
+            time: ["2026-07-16T00:00", "2026-07-16T01:00", "2026-07-16T02:00"],
+            temperature: [20.0, 19.5, 19.0],
+            weatherCode: [0, 0, 1],
+            windSpeed: [4.0, 3.5, 3.0]
         )
     )
 }
